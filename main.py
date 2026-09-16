@@ -39,8 +39,6 @@ def run_crawl_job(job_id: str, domains: list[str]):
     for domain in domains:
         JOBS[job_id]["domains"][domain]["status"] = "crawling"
         try:
-            # euer bestehender crawl_domain()-Aufruf, pro Domain statt Batch,
-            # damit der Status zwischendrin aktualisiert werden kann
             events = crawl_and_extract_links(domain)
             JOBS[job_id]["domains"][domain]["status"] = "done"
             JOBS[job_id]["domains"][domain]["events_found"] = len(events)
