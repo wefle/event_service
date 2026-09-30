@@ -1,0 +1,11 @@
+.status-window {
+    .result-btn {
+        display: none;
+    }
+
+    .card-container {
+        .card {
+            border: 1px solid;
+        }
+    }
+}

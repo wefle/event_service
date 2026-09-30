@@ -17,11 +17,11 @@ HEADERS = {
 }
 
 EVENT_KEYWORDS = [
-    "event", "veranstaltung", "termin", "kalender", "calendar", "agenda", "heute", "monatsansicht"
+    "event", "veranstaltung", "termin", "kalender", "calendar", "agenda", "heute", "monatsansicht", "events"
 ]
 
-DB_PATH = Path("event_scrape.db")
-HTML_DB_PATH = Path("html_event_scrape.db")
+DB_PATH = Path("db/event_scrape.db")
+HTML_DB_PATH = Path("db/html_event_scrape.db")
 
 def fetch_page(url: str, timeout: int = 10) -> str:
     # gets raw HTML code of page

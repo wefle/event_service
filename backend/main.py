@@ -6,6 +6,10 @@ from threading import Lock
 from fastapi import FastAPI, BackgroundTasks
 from event_crawler import init_db, crawl_domain, get_event_html_code, get_stored_html
 from extraction import html_to_clean_text, extract_event_data, create_wp_draft
+import requests
+import os 
+from fastapi import FastAPI, BackgroundTasks, Depends, Header, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 JOBS: dict[str, dict] = {}
 JOBS_LOCK = Lock()
@@ -26,9 +30,20 @@ def crawl_and_extract_links(domain: str) -> list[dict]:
     conn.close()
     return get_event_html_code(domain)
 
+def check_api_key(x_api_key: str = Header(...)):
+    if x_api_key != os.environ["SERVICE_API_KEY"]:
+        raise HTTPException(status_code=403, detail="Ungültiger API-Key")
+
 app = FastAPI()
 
-@app.post("/crawl/start")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "X-Api-Key"],
+)
+
+@app.post("/crawl/start", dependencies=[Depends(check_api_key)])
 def start_crawl(payload: dict, background_tasks: BackgroundTasks):
     domains = payload.get("domains", [])
     job_id = new_job(domains)
@@ -39,8 +54,6 @@ def run_crawl_job(job_id: str, domains: list[str]):
     for domain in domains:
         JOBS[job_id]["domains"][domain]["status"] = "crawling"
         try:
-            # euer bestehender crawl_domain()-Aufruf, pro Domain statt Batch,
-            # damit der Status zwischendrin aktualisiert werden kann
             events = crawl_and_extract_links(domain)
             JOBS[job_id]["domains"][domain]["status"] = "done"
             JOBS[job_id]["domains"][domain]["events_found"] = len(events)
@@ -60,7 +73,7 @@ def crawl_status(job_id: str):
         "events": job["events"],
     }
 
-@app.post("/crawl/create-draft")
+@app.post("/crawl/create-draft", dependencies=[Depends(check_api_key)])
 def create_draft(payload: dict):
     event_url = payload.get("event_url")
     if not event_url:

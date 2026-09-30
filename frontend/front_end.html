@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event-Scraper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Magdeboogie</h1>
+    <h2>Event-Scraper</h2>
+    <form onsubmit="handleEventScraping(event)">
+        <div class="form-group">
+            <label for="domain">Domain-Url:</label>
+            <input type="text" id="domain" name="domain" placeholder="z.B. beispiel.de">
+        </div>
+        <p id="msg"></p>
+        <button type="submit">Suche starten</button>
+    </form>
+    <div class="status-window">
+        <p class="status"></p>
+        <button class="result-btn">Entwurfs-Karten erstellen</button>
+        <div class="card-container">
+        </div>
+    </div>
+    <script src="front_end.js"></script>
+</body>
+</html>
